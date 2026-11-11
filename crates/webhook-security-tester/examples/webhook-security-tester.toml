@@ -1,0 +1,21 @@
+version = 1
+profile = "github"
+endpoint = "http://127.0.0.1:8787/webhooks/github"
+secret_env = "WEBHOOK_SECURITY_TESTER_GITHUB_SECRET"
+timeout_ms = 3000
+
+[expectations]
+accept_statuses = [200, 201, 202, 204]
+reject_statuses = [400, 401, 403]
+duplicate_statuses = [200, 201, 202, 204]
+require_unambiguous_signature_header = true
+
+[runner]
+max_body_bytes = 65536
+concurrency = 5
+follow_redirects = false
+
+[observer]
+enabled = true
+require = true
+settle_ms = 500

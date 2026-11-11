@@ -1,0 +1,17 @@
+version = 1
+profile = "timestamped-hmac-v1"
+endpoint = "http://127.0.0.1:8788/webhooks/timestamped"
+secret_env = "WEBHOOK_SECURITY_TESTER_TIMESTAMP_SECRET"
+timeout_ms = 3000
+
+[runner]
+concurrency = 5
+
+[observer]
+enabled = true
+require = true
+settle_ms = 500
+
+[timestamp]
+tolerance_seconds = 300
+future_skew_seconds = 30
