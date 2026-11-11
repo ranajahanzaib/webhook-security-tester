@@ -1,10 +1,13 @@
-Fixes #<issue_number_goes_here>
+## Summary
 
-> It's a good idea to open an issue first for discussion.
+Describe the change and its reason.
 
-**Description**
-A brief summary of what this PR does and why.
+## Validation
 
 - [ ] Tests pass
-- [ ] README updated if needed
-- [ ] No breaking changes (or described below)
+- [ ] Documentation updated when behavior changes
+- [ ] No secrets or production payloads added
+
+## Compatibility
+
+Describe any user-visible or protocol compatibility changes, or write “None.”

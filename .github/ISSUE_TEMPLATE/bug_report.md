@@ -1,26 +1,29 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
+title: ""
 labels: bug
-assignees: ''
+assignees: ""
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Expected behavior**
+What should happen?
+
+**Observed behavior**
+What happened instead?
 
 **To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+1. Include the command and a minimal configuration with secrets removed.
+2. Describe the local receiver behavior or provide a minimal reproduction.
+
+**Output**
+Include sanitized output or the relevant report result. Do not attach signing secrets or production payloads.
 
 **Environment**
-- OS: [e.g. macOS 26.4.1, Windows 11, Ubuntu 24.04.4]
-- Version: [e.g. 1.0.0]
+
+- OS:
+- Webhook Security Tester version:
+- Rust version, if running from source:
 
 **Additional context**
-Add any other context or screenshots here.
