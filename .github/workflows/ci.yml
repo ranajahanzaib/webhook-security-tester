@@ -1,33 +1,37 @@
 name: CI
-
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          node-version: 20
-
-      # Uncomment and adjust the steps below to match your project's setup
-
-      # - name: Install dependencies
-      #   run: npm ci
-
-      # - name: Lint
-      #   run: npm run lint
-
-      # - name: Run tests
-      #   run: npm test
-
-      # - name: Build
-      #   run: npm run build
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo test --workspace
+      - run: cargo build --release
+      - name: Run local conformance suite
+        env:
+          WEBHOOK_SECURITY_TESTER_GITHUB_SECRET: local-ci-secret
+        run: |
+          target/release/webhook-security-tester-reference-receiver --profile github --port 8787 --mode secure > /tmp/webhook-security-tester-receiver.log 2>&1 &
+          receiver_pid=$!
+          trap 'kill "$receiver_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8787/__webhookproof/observations > /dev/null; then break; fi
+            sleep 1
+          done
+          target/release/webhook-security-tester test -c crates/webhook-security-tester/examples/webhook-security-tester.toml --json report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: webhook-security-tester-report
+          path: report.json
+          if-no-files-found: ignore
