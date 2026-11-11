@@ -1,0 +1,32 @@
+[package]
+name = "webhook-security-tester"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Local webhook consumer conformance testing"
+repository = "https://github.com/ranajahanzaib/webhook-security-tester"
+readme = "../../README.md"
+keywords = ["webhook", "security", "testing", "hmac"]
+categories = ["command-line-utilities", "development-tools::testing"]
+
+[dependencies]
+anyhow = "1"
+axum = "0.8"
+clap = { version = "4.6", features = ["derive"] }
+hex = "0.4"
+hmac = "0.12"
+reqwest = { version = "0.13", default-features = false, features = ["rustls", "json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+tokio = { version = "1", features = ["full"] }
+toml = "1.1"
+url = "2"
+
+[[bin]]
+name = "webhook-security-tester"
+path = "src/main.rs"
+
+[[bin]]
+name = "webhook-security-tester-reference-receiver"
+path = "src/bin/reference_receiver.rs"

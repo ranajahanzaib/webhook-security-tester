@@ -1,0 +1,3 @@
+[workspace]
+members = ["crates/webhook-security-tester"]
+resolver = "2"
