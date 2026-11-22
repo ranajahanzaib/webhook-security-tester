@@ -58,7 +58,7 @@ async fn start_with_state(
         .unwrap();
     let receiver = Receiver(child);
     let client = reqwest::Client::builder().no_proxy().build().unwrap();
-    for _ in 0..50 {
+    for _ in 0..100 {
         if client
             .get(format!(
                 "http://127.0.0.1:{port}/__webhookproof/observations"
@@ -505,4 +505,59 @@ async fn delayed_second_effect_cannot_be_mistaken_for_suppression() {
     let result = report.results.iter().find(|r| r.id == "DUP-001").unwrap();
     assert_eq!(result.observed_processing_count, Some(2));
     assert_eq!(result.classification, Classification::Fail);
+}
+
+#[test]
+fn cli_init_command_creates_config_and_fails_on_existing() {
+    let dir = std::env::temp_dir().join(format!("wst-init-test-{}", std::process::id()));
+    let _ = std::fs::create_dir_all(&dir);
+    let output_file = dir.join("test-config.toml");
+    let _ = std::fs::remove_file(&output_file);
+
+    let status = Command::new(env!("CARGO_BIN_EXE_webhook-security-tester"))
+        .args(["init", "-o", output_file.to_str().unwrap()])
+        .status()
+        .expect("failed to execute cli binary");
+    assert!(status.success());
+    assert!(output_file.exists());
+
+    let content = std::fs::read_to_string(&output_file).unwrap();
+    assert!(content.contains("profile = \"github\""));
+
+    // Overwriting without permission must fail
+    let status2 = Command::new(env!("CARGO_BIN_EXE_webhook-security-tester"))
+        .args(["init", "-o", output_file.to_str().unwrap()])
+        .status()
+        .expect("failed to execute cli binary");
+    assert_eq!(status2.code(), Some(2));
+
+    let _ = std::fs::remove_file(&output_file);
+    let _ = std::fs::remove_dir(&dir);
+}
+
+#[test]
+fn cli_fixtures_and_explain_commands() {
+    let output = Command::new(env!("CARGO_BIN_EXE_webhook-security-tester"))
+        .args(["fixtures", "list", "--profile", "github"])
+        .output()
+        .expect("failed to run fixtures list");
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("GH-SIG-001"));
+    assert!(stdout.contains("REPLAY-001"));
+
+    let explain = Command::new(env!("CARGO_BIN_EXE_webhook-security-tester"))
+        .args(["explain", "GH-SIG-004"])
+        .output()
+        .expect("failed to run explain");
+    assert!(explain.status.success());
+    let explain_text = String::from_utf8(explain.stdout).unwrap();
+    assert!(explain_text.contains("GH-SIG-004 — Modified payload"));
+    assert!(explain_text.contains("HMAC-SHA256"));
+
+    let unknown_explain = Command::new(env!("CARGO_BIN_EXE_webhook-security-tester"))
+        .args(["explain", "UNKNOWN-999"])
+        .output()
+        .expect("failed to run explain on unknown");
+    assert_eq!(unknown_explain.status.code(), Some(2));
 }

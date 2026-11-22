@@ -1,13 +1,13 @@
 # Provider profiles
 
-| Property              | GitHub                                     | timestamped-hmac-v1                                  |
-| --------------------- | ------------------------------------------ | ---------------------------------------------------- |
-| Signature             | `X-Hub-Signature-256: sha256=<hex>`        | `WebhookSecurityTester-Signature: t=<unix>,v1=<hex>` |
-| Signed bytes          | Exact raw body                             | ASCII timestamp, period byte, exact raw body         |
-| MAC                   | HMAC-SHA256                                | HMAC-SHA256                                          |
-| Signed timestamp      | No                                         | Yes                                                  |
-| Delivery identifier   | `X-GitHub-Delivery`, unsigned by body HMAC | Synthetic signed JSON `id` in fixture                |
-| Duplicate observation | Optional local observer                    | Optional local observer                              |
+| Property              | GitHub                                     | timestamped-hmac-v1                          |
+| --------------------- | ------------------------------------------ | -------------------------------------------- |
+| Signature             | `X-Hub-Signature-256: sha256=<hex>`        | `webhookproof-signature: t=<unix>,v1=<hex>`  |
+| Signed bytes          | Exact raw body                             | ASCII timestamp, period byte, exact raw body |
+| MAC                   | HMAC-SHA256                                | HMAC-SHA256                                  |
+| Signed timestamp      | No                                         | Yes                                          |
+| Delivery identifier   | `X-GitHub-Delivery`, unsigned by body HMAC | Synthetic signed JSON `id` in fixture        |
+| Duplicate observation | Optional local observer                    | Optional local observer                      |
 
 The serialized capability model also distinguishes a provider delivery ID from the signed `id` in Webhook Security Tester's controlled fixture body. For GitHub, only the latter is authenticated by the body HMAC. It is a test contract rather than a claim that every GitHub webhook payload has an `id` field.
 

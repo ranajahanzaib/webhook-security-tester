@@ -23,7 +23,7 @@ struct Cli {
 enum Command {
     /// Create an example configuration without overwriting an existing file.
     Init {
-        #[arg(long, default_value = "webhook-security-tester.toml")]
+        #[arg(short, long, default_value = "webhook-security-tester.toml")]
         output: PathBuf,
     },
     /// Send the selected conformance scenarios to a local endpoint.
